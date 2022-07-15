@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Custom Video Source -- Agora</title>
+  <link rel="stylesheet" href="../assets/bootstrap.min.css">
+  <link rel="stylesheet" href="./index.css">
+  <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+      <button id='connect'  class="btn-primary" style="display:none;" onclick="connect()">Connect</button>
+      <br>
+      UID <span id="uuid"></span>
+      <br>
+      IP <span id="ip"></span>
+      <br>
+      Location <span id="location"></span>
+
+  <div></div>
+  <div></div>
+  <br>
+  <div  style="display:inline-block;">
+  <span id='localv' style="display:none;width:320px; "> Local Video </span>
+  <span id='b' style="display:inline-block;width:320px; "> Peer 2 Peer  </span>
+  <span id='c' style="display:inline-block;width:320px; "> Agora SD-RTN </span>
+  </div>
+   <canvas id="canvas" width="1280" height="720" style="width:320px; height:180px; display:none; background-color:#444;"> </canvas>
+
+  <div  style="display:inline-block;">
+  <video width="320" height="180" style="display:inline-block; background-color:#aaa" id="received-video"></video>
+  <div width="320" height="180" style="display:inline-block; width:320px; height:180px; background-color:#aaa" id="received-video-agora"></div>
+  </div>
+
+
+<!--
+  Import the Agora Video Call SDK for Web and local calls to it.
+-->
+<script src="../assets/jquery-3.4.1.min.js"></script>
+<script src="../assets/bootstrap.bundle.min.js"></script>
+<script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+<script src="customVideoSource.js"></script>
+
+</body>
+</html>
