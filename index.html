@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+ <h3>
+	Agora Network vs Public Internet
+ </h3>
 
       <button id='connect'  class="btn-primary" style="display:none;" onclick="connect()">Connect</button>
       <br>
@@ -19,15 +22,17 @@
       <br>
       IP <span id="ip"></span>
       <br>
-      Location <span id="location"></span>
+      Local Location: <span id="location"></span>
+      <br>
+      Remote Location: <span id="remloc"></span>
 
   <div></div>
   <div></div>
   <br>
-  <div  style="display:inline-block;">
-  <span id='localv' style="display:none;width:320px; "> Local Video </span>
-  <span id='b' style="display:inline-block;width:320px; "> Peer 2 Peer  </span>
-  <span id='c' style="display:inline-block;width:320px; "> Agora SD-RTN </span>
+  <div  style="display:block;">
+  <span id='localv' style="display:none;width:320px; "> Locally Generated Custom Video Source </span>
+  <span id='b' style="display:inline-block;width:320px; "> Video relayed back over Peer 2 Peer  </span>
+  <span id='c' style="display:inline-block;width:320px; "> Video relayed back over Agora SD-RTN </span>
   </div>
    <canvas id="canvas" width="1280" height="720" style="width:320px; height:180px; display:none; background-color:#444;"> </canvas>
 

@@ -1,14 +1,18 @@
 const paramsString = document.location.search;
 const searchParams = new URLSearchParams(paramsString);
-const p2pid=searchParams.get("p");
-const rpid=searchParams.get("r");
+const p2pid=searchParams.get("channel");
+let rpid=searchParams.get("r");
+
+if (rpid && (rpid=='false' || rpid=='0')) {
+	rpid=null;
+}
 
 var peer;
 var conn;
 var peerConnection;
 var canv;
 var ctx;
-
+var loc;
 $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
   // Convert key-value pairs to JSON
   // https://stackoverflow.com/a/39284735/452587
@@ -18,12 +22,16 @@ $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
   }, {});
   document.getElementById("location").textContent = data.loc;
   document.getElementById("ip").textContent = data.ip;
+	loc= data.loc;
+
 });
 
+let p2pids=p2pid+(100+Math.floor(Math.random() * 100));
+let p2pice="{ config: { 'iceServers': [ { 'url': 'stun:stun.l.google.com:19302' } ] } }"
 if (rpid)
-	peer= new Peer(p2pid);
+	peer= new Peer(p2pid,p2pice);
 else
-	peer= new Peer();
+	peer= new Peer(p2pids,p2pice);
 
 var currentCall;
 peer.on("open", function (id) {
@@ -43,14 +51,13 @@ peer.on('connection', function(conn) {
 		conn.on('data', function(data) {
 		  console.log('Received', data);
 		});
-	        conn.send("H1");
+	        conn.send("loc:"+loc);
   	});
 });
 
 
 peer.on("call", async (call) => {
-
-	var mstream=await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+	var mstream=await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         call.answer(mstream);
         currentCall = call;
         call.on("stream", (remoteStream) => {
@@ -174,6 +181,17 @@ function handleUserUnpublished(user, mediaType) {
 }
 
 function connect() {
+	conn = peer.connect(p2pid);
+        conn.on('open', function() {
+                conn.on('data', function(data) {
+                  console.log('Received', data);
+			if (data.indexOf("loc:")>-1) {
+			document.getElementById("remloc").textContent = data.substring(4);
+			}
+                });
+                conn.send("H2");
+        });
+
   setStream();
 	setupP2P();
 	join(); // Agora 1
@@ -184,7 +202,7 @@ function connect() {
   }
 async function setupP2P() {
   const call = peer.call(p2pid, lstream);
-	call.on("stream", (stream) => {
+  call.on("stream", (stream) => {
     document.getElementById("received-video").srcObject = stream;
     document.getElementById("received-video").play();
   });
