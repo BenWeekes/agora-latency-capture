@@ -27,7 +27,7 @@ $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
 });
 
 let p2pids=p2pid+(100+Math.floor(Math.random() * 100));
-let p2pice="{ config: { 'iceServers': [ { 'url': 'stun:stun.l.google.com:19302' } ] } }"
+let p2pice="{ config: { 'iceServers': [ { 'url': 'stun:stun.l.google.com:19302' } ] , trickle: true}, trickle: true }"
 if (rpid)
 	peer= new Peer(p2pid,p2pice);
 else
@@ -36,14 +36,14 @@ else
 var currentCall;
 peer.on("open", function (id) {
   document.getElementById("uuid").textContent = id;
-  if (!rpid) {
-	  canv=document.getElementById("canvas");
-          ctx=document.getElementById("canvas").getContext('2d');
+  if (!rpid ) {
 	  document.getElementById("connect").style.display='inline-block';
 	  document.getElementById("canvas").style.display='inline-block';
 	  document.getElementById("localv").style.display='inline-block';
-	  setInterval(clock,50);
   }
+	  canv=document.getElementById("canvas");
+          ctx=document.getElementById("canvas").getContext('2d');
+	  setInterval(clock,33);
 });
 
 peer.on('connection', function(conn) { 
@@ -57,15 +57,18 @@ peer.on('connection', function(conn) {
 
 
 peer.on("call", async (call) => {
-	var mstream=await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        call.answer(mstream);
+	//var mstream=await navigator.mediaDevices.getUserMedia({ video: false, audio: false });
+	setStream();
+        call.answer(lstream);
+        //call.answer(mstream);
         currentCall = call;
         call.on("stream", (remoteStream) => {
           document.getElementById("received-video").srcObject = remoteStream;
           document.getElementById("received-video").play();
 	  var stream=document.getElementById("received-video").captureStream(30);
           var newTrack=stream.getVideoTracks()[0];
-          currentCall.peerConnection.getSenders()[1].replaceTrack(newTrack);
+          //currentCall.peerConnection.getSenders()[1].replaceTrack(newTrack);
+          currentCall.peerConnection.getSenders()[0].replaceTrack(newTrack);
         });
 });
 
@@ -192,7 +195,7 @@ function connect() {
                 conn.send("H2");
         });
 
-  setStream();
+  	setStream();
 	setupP2P();
 	join(); // Agora 1
 }
@@ -217,3 +220,141 @@ async function setupP2P() {
   })
   currentCall = call;
 }
+
+    async function getStats() {
+              await client._p2pChannel.connection.peerConnection.getStats().then(async stats => {
+                await stats.forEach(report => {                
+                  if (report.type === "inbound-rtp" && report.kind === "video") {
+                    var now = Date.now();
+                    var nack = report["nackCount"];
+                    var fps = report["framesPerSecond"];
+                    var packetsLost = report["packetsLost"];
+                    var bytesReceived = report["bytesReceived"];
+                    var packetsReceived = report["packetsReceived"];
+        	    document.getElementById("statsc2").textContent = "fps: "+fps+", nack:"+nack+", lost:"+packetsLost+", MB:"+Math.floor(bytesReceived/1000000);
+		  }
+		})
+	      })
+
+              await currentCall.peerConnection.getStats().then(async stats => {
+                await stats.forEach(report => {                
+                  if (report.type === "inbound-rtp" && report.kind === "video") {
+                    var now = Date.now();
+                    var nack = report["nackCount"];
+                    var fps = report["framesPerSecond"];
+                    var packetsLost = report["packetsLost"];
+                    var bytesReceived = report["bytesReceived"];
+                    var packetsReceived = report["packetsReceived"];
+        	    document.getElementById("statsb2").textContent = "fps: "+fps+", nack:"+nack+", lost:"+packetsLost+", MB:"+Math.floor(bytesReceived/1000000);
+		  }
+		})
+	      })
+    }
+
+
+    function getMS(parsedDate){
+	var tokens = parsedDate.split(".");
+	var ms=tokens[1]*1;
+	tokens=tokens[0].split(":");
+	var hms=tokens[0]*60*60*1000;
+	var mms=tokens[1]*60*1000;
+	var sms=tokens[2]*1000;
+	return ms+hms+mms+sms;
+    }
+
+    const { createWorker, createScheduler } = Tesseract;
+    const scheduler = createScheduler();
+    const video = document.getElementById('poem-video');
+    const messages = document.getElementById('messages');
+
+    let timerId = null;
+    let samplecount=0;
+    let p2p_total=0;
+    let agora_total=0;
+
+    const doOCR = async () => {
+      const c = document.getElementById('canvas');
+
+      let video=document.getElementById('received-video');
+      const c2 = document.createElement('canvas');
+      c2.width = 1280;
+      c2.height = 720;
+      if (video && !video.paused) {
+      	c2.getContext('2d').drawImage(video, 0, 0, 1280, 720);
+      }
+
+      video=document.getElementsByClassName('agora_video_player')[0];
+      const c3 = document.createElement('canvas');
+      c3.width = 1280;
+      c3.height = 720;
+      if (video && !video.paused) {
+      	c3.getContext('2d').drawImage(video, 0, 0, 1280, 720);
+      }
+
+      var ms_local=-1;
+      var ms_p2p=-1;
+      var ms_agora=-1;
+
+      let ocr = await scheduler.addJob('recognize', c);
+      if (ocr.data && ocr.data.text) {
+	      ocr.data.text.split('\n').forEach((line) => {
+	      if (line.length>4) {
+		      ms_local=getMS(line);
+		}
+	      });
+      }
+
+      ocr = await scheduler.addJob('recognize', c2);
+      if (ocr.data && ocr.data.text) {
+	      ocr.data.text.split('\n').forEach((line) => {
+		if (line.length>4) {
+		      ms_p2p=getMS(line);
+		}
+	      });
+      }
+
+      ocr = await scheduler.addJob('recognize', c3);
+      if (ocr.data && ocr.data.text) {
+	      ocr.data.text.split('\n').forEach((line) => {
+		if (line.length>4) {
+		      ms_agora=getMS(line);
+		}
+	      });
+      }
+     if (isNaN(ms_local)) {
+             ms_local=-1;
+     }
+
+     if (isNaN(ms_p2p)) {
+             ms_p2p=-1;
+     }
+
+     if (isNaN(ms_agora)) {
+             ms_agora=-1;
+     }
+
+     console.log("ms_local",ms_local,"ms_p2p",ms_p2p,"ms_agora",ms_agora, "ms_local-ms_agora", ms_local-ms_agora, "ms_local-ms_p2p", ms_local-ms_p2p);
+    if (ms_local>-1 && ms_p2p>-1 && ms_agora>-1) {
+        samplecount++;
+        p2p_total=(ms_local-ms_p2p)+p2p_total;
+        agora_total=(ms_local-ms_agora)+agora_total;
+        document.getElementById("statsb").textContent = "Average round trip duration: "+Math.floor(p2p_total/samplecount)+" ms";
+        document.getElementById("statsc").textContent = "Average round trip duration: "+Math.floor(agora_total/samplecount)+" ms";
+	getStats();
+    }
+    };
+
+    (async () => {
+      if (!rpid ) {
+      for (let i = 0; i < 4; i++) {
+        const worker = createWorker();
+        await worker.load();
+        await worker.loadLanguage('eng');
+        await worker.initialize('eng');
+        scheduler.addWorker(worker);
+      }
+      timerId = setInterval(doOCR, 2000);
+      }
+    })();
+
+
