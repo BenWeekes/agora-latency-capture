@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Agora vs P2P</title>
+  <title>Agora vs p2p</title>
   <link rel="stylesheet" href="../assets/bootstrap.min.css">
   <link rel="stylesheet" href="./index.css">
   <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -14,9 +14,19 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
- <h3>
-	Agora SD-RTN vs Public Internet
- </h3>
+ <h4>
+Agora's SD-RTN vs the Public Internet - Video Calling Quality Comparison
+
+ </h4>
+      <span id="gmt"></span>
+      <br>
+      <br>
+      <b>Test:</b> This page compares call quality over Agora's network (SD-RTN) with Peer to Peer (p2p) over the public internet.
+      <br>
+      <b>Method:</b> Two video calls are established with a remote session over both SD-RTN and p2p. <br>The locally generated clock video is sent over both calls and echoed back by the remote user. <br>The clocks are read using OCR and metrics are obtained for connection time, latency, jitter, bitrate, framerate volatility and packet loss. <br>These stats cover the full path to the remote computer and back.
+      <br>
+      <br>
+
 
       UID <span id="uuid"></span>
       &nbsp;
@@ -35,7 +45,7 @@
   <br>
   <div  style="display:block;">
   <span id='localv' style="display:none;width:320px; "> Locally Generated Custom Video Source </span>
-  <span id='b' style="display:inline-block;width:320px; "> Video relayed back over Peer 2 Peer  </span>
+  <span id='b' style="display:inline-block;width:320px; "> Video relayed back over Peer to Peer (p2p)  </span>
   <span id='c' style="display:inline-block;width:320px; "> Video relayed back over Agora SD-RTN </span>
   </div>
 

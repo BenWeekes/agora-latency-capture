@@ -130,6 +130,8 @@ peer.on("call", async (call) => {
                         ctx.fillStyle = "#ec9706";
                         ctx.font = "200px Arial";
                         ctx.fillText( d.toLocaleTimeString('en-US', {hour12: false})+"."+d.getMilliseconds(), 30, 400);
+			document.getElementById("gmt").textContent = d.toUTCString();
+
                 }
 
 
@@ -332,13 +334,16 @@ function setStats(report,div,connect,brref,rendervol) {
 		       kbps=(br_delta*8/1000)/(brtime_delta/1000);
 		    }
 
-        	    var stats = "Connect time: "+connect+" ms, W: "+frameWidth+", H: "+frameHeight+" <br>FPS: "+fps+", Nack: "+nack+", Lost: "+packetsLost+" kbps: "+Math.floor(kbps)+"  <br>Jitter: "+jitter+", avg:"+rendervol.jitteravg.toFixed(3)+", max: "+rendervol.jittermax.toFixed(3)+" <br>Jitter Delay: "+jitterBufferDelay+" <br>Jitter Emitted: "+jitterBufferEmittedCount+" <br>SquaredInterFrameDelay: "+totalSquaredInterFrameDelay+"<br>framesDropped: "+framesDropped+"<br>FPS Vol%: "+rendervol.renderRateStdDeviationPerc.toFixed(0)+", avg:"+rendervol.renderRateStdDeviationPercAvg.toFixed(0)+", max:"+rendervol.renderRateStdDeviationPercMax.toFixed(0) ;
+        	    //var stats = "Connect time: "+connect+" ms, W: "+frameWidth+", H: "+frameHeight+" <br>FPS: "+fps+", Nack: "+nack+", Lost: "+packetsLost+" kbps: "+Math.floor(kbps)+"  <br>Jitter: "+jitter+", avg:"+rendervol.jitteravg.toFixed(3)+", max: "+rendervol.jittermax.toFixed(3)+" <br>Jitter Delay: "+jitterBufferDelay+" <br>Jitter Emitted: "+jitterBufferEmittedCount+" <br>SquaredInterFrameDelay: "+totalSquaredInterFrameDelay+"<br>framesDropped: "+framesDropped+"<br>FPS Vol%: "+rendervol.renderRateStdDeviationPerc.toFixed(0)+", avg:"+rendervol.renderRateStdDeviationPercAvg.toFixed(0)+", max:"+rendervol.renderRateStdDeviationPercMax.toFixed(0) ;
+        	    var stats = "Connect time: "+connect+" ms, W: "+frameWidth+", H: "+frameHeight+" <br>FPS: "+fps+", Nack: "+nack+", Lost: "+packetsLost+" kbps: "+Math.floor(kbps)+"  <br>Jitter: "+jitter+", avg:"+rendervol.jitteravg.toFixed(3)+", max: "+rendervol.jittermax.toFixed(3)+"<br>FPS Vol%: "+rendervol.renderRateStdDeviationPerc.toFixed(0)+", avg:"+rendervol.renderRateStdDeviationPercAvg.toFixed(0)+", max:"+rendervol.renderRateStdDeviationPercMax.toFixed(0) ;
 		   console.log(stats);
 		   document.getElementById(div).innerHTML=stats;
 }
 
     async function getStats() {
-	    document.getElementById("durat").textContent = ((Date.now()-start_p)/1000).toFixed(0);
+	    if (start_p && !isNaN(start_p)){
+	    	document.getElementById("durat").textContent = ((Date.now()-start_p)/1000).toFixed(0);
+	    }
 	    if (client && client._p2pChannel && client._p2pChannel.connection && client._p2pChannel.connection.peerConnection) {
               await client._p2pChannel.connection.peerConnection.getStats().then(async stats => {
                 await stats.forEach(report => {                
