@@ -1,11 +1,21 @@
 const paramsString = document.location.search;
 const searchParams = new URLSearchParams(paramsString);
 const p2pid=searchParams.get("channel");
+
 let rpid=searchParams.get("r");
+let usewebcam=searchParams.get("w");
 
 if (rpid && (rpid=='false' || rpid=='0')) {
 	rpid=null;
 }
+if (usewebcam && (usewebcam=='false' || usewebcam=='0')) {
+	usewebcam=null;
+}
+
+var myvideo = document.createElement('video');
+const constraints = {
+		video: { width: 1280, height: 720 },
+	};
 
 var peer;
 var conn;
@@ -92,7 +102,11 @@ peer.on("open", function (id) {
 	  document.getElementById("localv").style.display='inline-block';
 	  canv=document.getElementById("canvas");
           ctx=document.getElementById("canvas").getContext('2d');
-	  setInterval(clock,33);
+	  if (usewebcam){
+	  	setInterval(webcam,15);
+	  } else {
+	  	setInterval(clock,33);
+	  }
 });
 
 peer.on('connection', function(conn) { 
@@ -111,8 +125,6 @@ var connect_a=-1;
 peer.on("call", async (call) => {
 	var mstream=await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         call.answer(mstream);
-	//setStream();
-        //call.answer(lstream);
         currentCall = call;
         call.on("stream", (remoteStream) => {
           document.getElementById("received-video").srcObject = remoteStream;
@@ -123,7 +135,10 @@ peer.on("call", async (call) => {
         });
 });
 
-                function clock(){
+ function webcam(){
+	   ctx.drawImage(myvideo, 0, 0, 1280, 720);
+ }
+ function clock(){
                         ctx.font = '200px serif';
                         var d = new Date();
                         ctx.clearRect(0,0,1280,720);
@@ -132,7 +147,7 @@ peer.on("call", async (call) => {
                         ctx.fillText( d.toLocaleTimeString('en-US', {hour12: false})+"."+d.getMilliseconds(), 30, 400);
 			document.getElementById("gmt").textContent = d.toUTCString();
 
-                }
+ }
 
 
 function switchUp(){
@@ -175,7 +190,14 @@ var options = {
 
 
 var lstream;
-function setStream() {
+async function setStream() {
+	if (usewebcam){
+		navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+			myvideo.srcObject = stream;
+			myvideo.play();
+		});
+	}
+
 	lstream=document.getElementById("canvas").captureStream(30);
 }
 
