@@ -172,9 +172,8 @@ function endCall() {
     currentCall = undefined;
   }
 
-AgoraRTC.setParameter("JOIN_EXTEND", {'force_playoutdelay_0':true});
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-AgoraRTC.setParameter("JOIN_EXTEND", {'force_playoutdelay_0':true});
+AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
 var localTracks = {
   videoTrack: null,
   audioTrack: null
@@ -209,7 +208,6 @@ async function join() {
   client.on("user-published", handleUserPublished);
   client.on("user-unpublished", handleUserUnpublished);
 
-AgoraRTC.setParameter("JOIN_EXTEND", {'force_playoutdelay_0':true});
   localTracks.audioTrack =  await AgoraRTC.createMicrophoneAudioTrack();
   [options.uid, localTracks.videoTrack ] = await Promise.all([
   // Join the channel.
@@ -218,7 +216,6 @@ AgoraRTC.setParameter("JOIN_EXTEND", {'force_playoutdelay_0':true});
   AgoraRTC.createCustomVideoTrack({mediaStreamTrack:lstream.getVideoTracks()[0]})
   ]);
   await client.publish([localTracks.videoTrack,localTracks.audioTrack]);
-AgoraRTC.setParameter("JOIN_EXTEND", {'force_playoutdelay_0':true});
   start_a = Date.now();
 }
 
@@ -227,9 +224,7 @@ async function join2() {
   client.on("user-published", handleUserPublished);
   client.on("user-unpublished", handleUserUnpublished);
 
-AgoraRTC.setParameter("JOIN_EXTEND", {'force_playoutdelay_0':true});
   options.uid=await  client.join(options.appid, options.channel, options.token || null, options.uid || null);
-AgoraRTC.setParameter("JOIN_EXTEND", {'force_playoutdelay_0':true});
   //await client.publish(Object.values(localTracks));
   //localTracks.videoTrack.play("local-player");
 }
