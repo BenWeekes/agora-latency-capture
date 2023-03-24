@@ -173,7 +173,7 @@ function endCall() {
   }
 
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
+//AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
 var localTracks = {
   videoTrack: null,
   audioTrack: null
