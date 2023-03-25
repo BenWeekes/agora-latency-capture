@@ -1,6 +1,6 @@
 const paramsString = document.location.search;
 const searchParams = new URLSearchParams(paramsString);
-const p2pid = searchParams.get("channel");
+const channel = searchParams.get("channel");
 
 let rpid = searchParams.get("r");
 let usewebcam = searchParams.get("w");
@@ -40,7 +40,7 @@ var br_p = {
   brtime: 0
 }
 
-var rendervol_a = {
+var callStatsMap_a = {
   renderFrameRate: 0,
   renderRateMean: 0,
   renderRateStdDeviation: 0,
@@ -57,7 +57,7 @@ var rendervol_a = {
 }
 
 
-var rendervol_p = {
+var callStatsMap_p = {
   renderFrameRate: -1,
   renderRateMean: 0,
   renderRateStdDeviation: 0,
@@ -86,10 +86,10 @@ $.get('https://www.cloudflare.com/cdn-cgi/trace', function (data) {
 
 });
 
-let p2pids = p2pid + (100 + Math.floor(Math.random() * 100));
+let p2pids = channel + (100 + Math.floor(Math.random() * 100));
 let p2pice = "{ config: { 'iceServers': [ { 'url': 'stun:stun.l.google.com:19302' } ] , trickle: true}, trickle: true }"
 if (rpid)
-  peer = new Peer(p2pid, p2pice);
+  peer = new Peer(channel, p2pice);
 else
   peer = new Peer(p2pids, p2pice);
 
@@ -128,9 +128,9 @@ peer.on("call", async (call) => {
   var mstream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
   call.answer(mstream);
   currentCall = call;
-  call.on("stream", (remoteStream) => {
+  call.on("stream",async (remoteStream) => {
     document.getElementById("received-video").srcObject = remoteStream;
-    document.getElementById("received-video").play();
+//await document.getElementById("received-video").play();
     var stream = document.getElementById("received-video").captureStream(30);
     var newTrack = stream.getVideoTracks()[0];
     //currentCall.peerConnection.getSenders()[0].replaceTrack(newTrack);
@@ -152,7 +152,7 @@ function clock() {
 
 }
 
-
+/*
 function switchUp() {
   setStream();
   var newTrack = lstream.getVideoTracks()[0];
@@ -162,7 +162,7 @@ function switchUp2() {
   var stream = document.getElementById("received-video").captureStream(30);
   var newTrack = stream.getVideoTracks()[0];
   currentCall.peerConnection.getSenders()[1].replaceTrack(newTrack);
-}
+}*/
 
 function endCall() {
   if (!currentCall) return;
@@ -190,7 +190,7 @@ var options = {
 };
 
 options.appid = "20b7c51ff4c644ab80cf5a4e646b0537";
-options.channel = p2pid; //"peer";
+options.channel = channel; //"peer";
 
 
 var lstream;
@@ -202,7 +202,9 @@ async function setStream() {
     });
   }
 
-  lstream = document.getElementById("canvas").captureStream(30);
+  //var strm= document.getElementById("canvas").captureStream(30);
+  lstream= document.getElementById("canvas").captureStream(30);
+  
 }
 
 async function join() {
@@ -210,14 +212,11 @@ async function join() {
   client.on("user-unpublished", handleUserUnpublished);
 
   localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-  [options.uid, localTracks.videoTrack] = await Promise.all([
-    // Join the channel.
-    client.join(options.appid, options.channel, options.token || null, options.uid || null),
-    // Create tracks to the customized video source.
-    AgoraRTC.createCustomVideoTrack({ mediaStreamTrack: lstream.getVideoTracks()[0] })
-  ]);
-  await client.publish([localTracks.videoTrack, localTracks.audioTrack]);
+  localTracks.videoTrack = await AgoraRTC.createCustomVideoTrack({ mediaStreamTrack: lstream.getVideoTracks()[0] });
   start_a = Date.now();
+  options.uid = await client.join(options.appid, options.channel, options.token || null, options.uid || null);
+  await client.publish([localTracks.videoTrack, localTracks.audioTrack]);
+  
 }
 
 async function join2() {
@@ -240,11 +239,12 @@ async function subscribe(user, mediaType) {
       end_a = Date.now();
       connect_a = end_a - start_a;
     }
+     ret();
   }
   if (mediaType === 'audio') {
     user.audioTrack.play();
   }
-  ret();
+ 
 }
 
 async function ret() {
@@ -269,12 +269,12 @@ function handleUserUnpublished(user, mediaType) {
   }
 }
 
-function connect() {
+async function connect() {
   start_p = null;
   end_p = null;
   start_a = null;
   end_a = null;
-  conn = peer.connect(p2pid);
+  conn = peer.connect(channel);
   conn.on('open', function () {
     conn.on('data', function (data) {
       console.log('Received', data);
@@ -284,7 +284,7 @@ function connect() {
     });
     conn.send("H2");
   });
-
+ // lstream= await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
   setStream();
   setupP2P();
   join(); // Agora 1
@@ -295,18 +295,21 @@ if (rpid) {
 }
 
 async function setupP2P() {
+ 
+  let gstream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+  await gstream.addTrack(lstream.getVideoTracks()[0]);
   start_p = Date.now();
-  const call = peer.call(p2pid, lstream);
-  call.on("stream", (stream) => {
+  const call = await peer.call(channel, gstream);
+  call.on("stream",async (stream) => {
     document.getElementById("received-video").srcObject = stream;
-    document.getElementById("received-video").play();
+   //await document.getElementById("received-video").play();
     if (!end_p) {
       end_p = Date.now();
       connect_p = end_p - start_p;
     }
   });
   call.on("data", (stream) => {
-    document.querySelector("#received-video").srcObject = stream;
+   // document.querySelector("#received-video").srcObject = stream;
   });
   call.on("error", (err) => {
     console.log(err);
@@ -317,23 +320,56 @@ async function setupP2P() {
   currentCall = call;
 }
 
-function setStats(report, div, connect, brref, rendervol) {
+function setStatsAudio(report, div, connect, brref, callStatsMap){
+  /*
+  jitter
+jitterBufferDelay
+jitterBufferEmittedCount
+jitterBufferMinimumDelay
+jitterBufferTargetDelay
+removedSamplesForAcceleration
+packetsLost
+packetsDiscarded
+packetsReceived
+*/
+var jitter = report["jitter"];
+var jitterBufferDelay = report["jitterBufferDelay"];
+var jitterBufferEmittedCount = report["jitterBufferEmittedCount"];
+var jitterBufferMinimumDelay = report["jitterBufferMinimumDelay"];
+var jitterBufferTargetDelay = report["jitterBufferTargetDelay"].toFixed(3);
+var removedSamplesForAcceleration = report["removedSamplesForAcceleration"];
+var packetsLost = report["packetsLost"];
+var packetsDiscarded = report["packetsDiscarded"];
+var packetsReceived = report["packetsReceived"];
+
+console.log("audio ",jitter,jitterBufferDelay,jitterBufferEmittedCount,jitterBufferMinimumDelay,jitterBufferTargetDelay,removedSamplesForAcceleration,packetsLost,packetsDiscarded,packetsReceived);
+
+}
+
+// video
+function setStats(report, div, connect, brref, callStatsMap) {
   var nack = report["nackCount"];
   var fps = report["framesPerSecond"];
   var framesDropped = report["framesDropped"];
+  var freezeCount = report["freezeCount"];
+  var totalFreezesDuration = report["totalFreezesDuration"];
+  var totalPausesDuration = report["totalPausesDuration"];
+  var totalSquaredInterFrameDelay = report["totalSquaredInterFrameDelay"].toFixed(3);
+  
+  console.log("video",framesDropped,freezeCount,totalFreezesDuration,totalPausesDuration,totalSquaredInterFrameDelay);
+  
   var frameHeight = report["frameHeight"];
   var frameWidth = report["frameWidth"];
-  var totalSquaredInterFrameDelay = report["totalSquaredInterFrameDelay"].toFixed(3);
   var jitter = report["jitter"];//.toFixed(3);
   if (jitter && jitter > 0 && !isNaN(jitter)) {
-    rendervol.jittersum = jitter + rendervol.jittersum;
-    rendervol.jittercount++;
-    rendervol.jitteravg = rendervol.jittersum / rendervol.jittercount;
-    if (isNaN(rendervol.jitteravg)) {
+    callStatsMap.jittersum = jitter + callStatsMap.jittersum;
+    callStatsMap.jittercount++;
+    callStatsMap.jitteravg = callStatsMap.jittersum / callStatsMap.jittercount;
+    if (isNaN(callStatsMap.jitteravg)) {
       console.log("nan");
     }
-    if (jitter > rendervol.jittermax) {
-      rendervol.jittermax = jitter;
+    if (jitter > callStatsMap.jittermax) {
+      callStatsMap.jittermax = jitter;
     }
   }
   jitter = jitter.toFixed(3);
@@ -344,10 +380,10 @@ function setStats(report, div, connect, brref, rendervol) {
   var packetsReceived = report["packetsReceived"];
 
   if (fps && !isNaN(fps))
-    rendervol.renderFrameRate = fps;
+    callStatsMap.renderFrameRate = fps;
   else
-    rendervol.renderFrameRate = -1;
-  calculateRenderRateVolatility(rendervol);
+    callStatsMap.renderFrameRate = -1;
+  calculateRenderRateVolatility(callStatsMap);
 
   var now = Date.now();
   var bb = brref.br;
@@ -362,9 +398,9 @@ function setStats(report, div, connect, brref, rendervol) {
     kbps = (br_delta * 8 / 1000) / (brtime_delta / 1000);
   }
 
-  //var stats = "Connect time: "+connect+" ms, W: "+frameWidth+", H: "+frameHeight+" <br>FPS: "+fps+", Nack: "+nack+", Lost: "+packetsLost+" kbps: "+Math.floor(kbps)+"  <br>Jitter: "+jitter+", avg:"+rendervol.jitteravg.toFixed(3)+", max: "+rendervol.jittermax.toFixed(3)+" <br>Jitter Delay: "+jitterBufferDelay+" <br>Jitter Emitted: "+jitterBufferEmittedCount+" <br>SquaredInterFrameDelay: "+totalSquaredInterFrameDelay+"<br>framesDropped: "+framesDropped+"<br>FPS Vol%: "+rendervol.renderRateStdDeviationPerc.toFixed(0)+", avg:"+rendervol.renderRateStdDeviationPercAvg.toFixed(0)+", max:"+rendervol.renderRateStdDeviationPercMax.toFixed(0) ;
-  var stats = "Connect time: " + connect + " ms, W: " + frameWidth + ", H: " + frameHeight + " <br>FPS: " + fps + ", Nack: " + nack + ", Lost: " + packetsLost + " kbps: " + Math.floor(kbps) + "  <br>Jitter: " + jitter + ", avg:" + rendervol.jitteravg.toFixed(3) + ", max: " + rendervol.jittermax.toFixed(3) + "<br>FPS Vol%: " + rendervol.renderRateStdDeviationPerc.toFixed(0) + ", avg:" + rendervol.renderRateStdDeviationPercAvg.toFixed(0) + ", max:" + rendervol.renderRateStdDeviationPercMax.toFixed(0);
-  console.log(stats);
+  //var stats = "Connect time: "+connect+" ms, W: "+frameWidth+", H: "+frameHeight+" <br>FPS: "+fps+", Nack: "+nack+", Lost: "+packetsLost+" kbps: "+Math.floor(kbps)+"  <br>Jitter: "+jitter+", avg:"+callStatsMap.jitteravg.toFixed(3)+", max: "+callStatsMap.jittermax.toFixed(3)+" <br>Jitter Delay: "+jitterBufferDelay+" <br>Jitter Emitted: "+jitterBufferEmittedCount+" <br>SquaredInterFrameDelay: "+totalSquaredInterFrameDelay+"<br>framesDropped: "+framesDropped+"<br>FPS Vol%: "+callStatsMap.renderRateStdDeviationPerc.toFixed(0)+", avg:"+callStatsMap.renderRateStdDeviationPercAvg.toFixed(0)+", max:"+callStatsMap.renderRateStdDeviationPercMax.toFixed(0) ;
+  var stats = "Connect time: " + connect + " ms, W: " + frameWidth + ", H: " + frameHeight + " <br>FPS: " + fps + ", Nack: " + nack + ", Lost: " + packetsLost + " kbps: " + Math.floor(kbps) + "  <br>Jitter: " + jitter + ", avg:" + callStatsMap.jitteravg.toFixed(3) + ", max: " + callStatsMap.jittermax.toFixed(3) + "<br>FPS Vol%: " + callStatsMap.renderRateStdDeviationPerc.toFixed(0) + ", avg:" + callStatsMap.renderRateStdDeviationPercAvg.toFixed(0) + ", max:" + callStatsMap.renderRateStdDeviationPercMax.toFixed(0);
+  //console.log(stats);
   document.getElementById(div).innerHTML = stats;
 }
 
@@ -376,8 +412,12 @@ async function getStats() {
     await client._p2pChannel.connection.peerConnection.getStats().then(async stats => {
       await stats.forEach(report => {
         if (report.type === "inbound-rtp" && report.kind === "video") {
-          setStats(report, "statsc2", connect_a, br_a, rendervol_a);
+          setStats(report, "statsc2", connect_a, br_a, callStatsMap_a);
         }
+        if (report.type === "inbound-rtp" && report.kind === "audio") {
+          setStatsAudio(report, "statsc2", connect_a, br_a, callStatsMap_a);
+        }
+        //console.log(report.type,report);
       })
     })
   }
@@ -386,7 +426,10 @@ async function getStats() {
     await currentCall.peerConnection.getStats().then(async stats => {
       await stats.forEach(report => {
         if (report.type === "inbound-rtp" && report.kind === "video") {
-          setStats(report, "statsb2", connect_p, br_p, rendervol_p);
+          setStats(report, "statsb2", connect_p, br_p, callStatsMap_p);
+        }
+        if (report.type === "inbound-rtp" && report.kind === "audio") {
+          setStatsAudio(report, "statsb2", connect_p, br_p, callStatsMap_p);
         }
       })
     })
