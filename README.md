@@ -9,7 +9,15 @@ https://sa-utils.agora.io/agora-latency-capture/?channel=CHANNEL&r=0
 https://sa-utils.agora.io/agora-latency-capture/?channel=CHANNEL&r=1    
 
 Open each URL on two different machines (or two tabs on the same machine).    
-The page with URL ending "r=0" will have a CONNECT button which will become enabled (blue) after a few seconds. Press the connect button.      
+     
+The page with URL ending "r=0" will have a CONNECT button which will become enabled (blue) after a few seconds. 
+     
+Avoid echo by right clicking the browser tab and selecting Mute Site as shown here:    
+
+      <img width="425" alt="Screenshot 2023-03-27 at 18 05 28" src="https://user-images.githubusercontent.com/9568165/228014758-5576da9c-6f27-464e-bd83-0a3e7794a862.png">
+
+     
+Press the connect button.      
 Allow the test to run for more than 1 minute.      
 
 Share a screenshot of the browser with the connect button which should look something like: 
