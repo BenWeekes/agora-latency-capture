@@ -10,75 +10,78 @@
   <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
   <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
-
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
- <h4>
-Agora's SD-RTN vs the Public Internet - Video Calling Quality Comparison
+  <h4>
+    Agora's SD-RTN vs the Public Internet - Video Calling Quality Comparison
+  </h4>
+  <b><span id="gmt"></span></b>
+  <br>
+ This page compares call quality over Agora's network (SD-RTN) with Peer to Peer (p2p) over the public internet.
 
- </h4>
-      <span id="gmt"></span>
-      <br>
-      <br>
-      <b>Test:</b> This page compares call quality over Agora's network (SD-RTN) with Peer to Peer (p2p) over the public internet.
-      <br>
-      <b>Method:</b> Two video calls are established with a remote session over both SD-RTN and p2p. <br>The locally generated clock video is sent over both calls and echoed back by the remote user. <br>The clocks are read using OCR and metrics are obtained for connection time, latency, jitter, bitrate, framerate volatility and packet loss. <br>These stats cover the full path to the remote computer and back.
-      <br>
-      <br>
-
-
-      UID <span id="uuid"></span>
-      &nbsp;
-      IP <span id="ip"></span>
-      &nbsp;
-      Local Location: <span id="location"></span>
-      &nbsp;
-      Remote Location: <span id="remloc"></span>
-      &nbsp;
-      Duration: <span id="durat"></span>
-      &nbsp;
-      <button id='connect'  class="btn-primary" style="display:none;" onclick="connect()">Connect</button>
+  <br>
+  <br>
+  UID: <span id="uuid"></span>
+  &nbsp;
+  IP: <span id="ip"></span>
+  &nbsp;
+  Local: <span id="location"></span>
+  &nbsp;
+  Remote: <span id="remloc"></span>
+  &nbsp;
+  Duration: <span id="durat"></span>
+  &nbsp;
+  <button id='connect' disabled class="btn-primary" style="display:none;background-color: lightgrey;"
+    onclick="connect()">Connect</button>
 
   <div></div>
   <div></div>
   <br>
-  <div  style="display:block;">
-  <span id='localv' style="display:none;width:320px; "> Locally Generated Custom Video Source </span>
-  <span id='b' style="display:inline-block;width:320px; "> Video relayed back over Peer to Peer (p2p)  </span>
-  <span id='c' style="display:inline-block;width:320px; "> Video relayed back over Agora SD-RTN </span>
+  <div style="display:block;">
+    <span id='localv' style="display:none;width:320px; "> Locally Generated Custom Video Source </span>
+    <span id='b' style="display:inline-block;width:320px; "> Video relayed back over Peer to Peer (p2p) </span>
+    <span id='c' style="display:inline-block;width:320px; "> Video relayed back over Agora SD-RTN </span>
   </div>
 
-    <div  style="display:block;">
-   <canvas id="canvas" width="1280" height="720" style="width:320px; height:180px; display:none; background-color:#444;"> </canvas>
+  <div style="display:block;">
+    <canvas id="canvas" width="1280" height="720"
+      style="width:320px; height:180px; display:none; background-color:#444;"> </canvas>
 
-  <div  style="display:inline-block;">
-  <video autoplay playsinline width="320" height="180" style="display:inline-block; background-color:#aaa" id="received-video"></video>
-  <div width="320" height="180" style="display:inline-block; width:320px; height:180px; background-color:#aaa" id="received-video-agora"></div>
-  </div>
+    <div style="display:inline-block;">
+      <video autoplay playsinline width="320" height="180" style="display:inline-block; background-color:#aaa"
+        id="received-video"></video>
+      <div width="320" height="180" style="display:inline-block; width:320px; height:180px; background-color:#aaa"
+        id="received-video-agora"></div>
     </div>
-
-
-  <div  style="display:block;">
-  <span id='statsa' style="display:inline-block;width:320px;"></span>
-  <span id='statsb' style="display:inline-block;width:320px;"></span>
-  <span id='statsc' style="display:inline-block;width:320px;"></span>
   </div>
 
-  <div  style="display:block;">
-  <div id='statsa2' style="display:inline-block;width:320px;"></div>
-  <div id='statsb2' style="display:inline-block;width:320px;"></div>
-  <div id='statsc2' style="display:inline-block;width:320px;"></div>
+  <div style="display:block;">
+    <span id='statsa' style="display:inline-block;width:320px;"></span>
+    <span id='statsb' style="display:inline-block;width:320px;">Real Time Stats</span>
+    <span id='statsc' style="display:inline-block;width:320px;">Real Time Stats</span>
+  </div>
+
+  <div style="display:block;">
+    <div id='statsa2' style="display:inline-block;width:320px;"></div>
+    <div id='statsb2' style="display:inline-block;width:320px;"></div>
+    <div id='statsc2' style="display:inline-block;width:320px;"></div>
   </div>
 
 
-<!--
-  Import the Agora Video Call SDK for Web and local calls to it.
--->
-<script src="../assets/jquery-3.4.1.min.js"></script>
-<script src="../assets/bootstrap.bundle.min.js"></script>
-<script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
-<script src="customVideoSourceAudio.js"></script>
-
+  <br>
+  <b>Method:</b> Two video calls are established simultraneously with a remote web browser over SD-RTN and p2p. 
+  <br>The locally generated millisecond clock video is published over both calls and echoed back by the remote user. 
+  <br>The clocks are read using OCR and browser metrics are used to calculate connection time, latency, jitter,
+  <br>bitrate, framerate volatility and packet loss. These stats cover the full path to the remote computer and back.
+  <br>
+  <br><b>The genuis score</b> is defined as: <b>(average_fps * average_width * average_height) / (latency * video_freezing * dropped_audio)</b>
+  <br>
+  <br> The connect button will enable once the OCR workers are setup. Any questions: <b>ben@agora.io</b>
+  <script src="../assets/jquery-3.4.1.min.js"></script>
+  <script src="../assets/bootstrap.bundle.min.js"></script>
+  <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+  <script src="customVideoSourceAudio.js"></script>
 </body>
 </html>
