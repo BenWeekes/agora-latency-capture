@@ -14,7 +14,7 @@ The page with URL ending "r=0" will have a CONNECT button which will become enab
      
 Avoid echo by right clicking the browser tab and selecting Mute Site as shown here:    
 
-      <img width="425" alt="Screenshot 2023-03-27 at 18 05 28" src="https://user-images.githubusercontent.com/9568165/228014758-5576da9c-6f27-464e-bd83-0a3e7794a862.png">
+<img width="425" alt="Screenshot 2023-03-27 at 18 05 28" src="https://user-images.githubusercontent.com/9568165/228014758-5576da9c-6f27-464e-bd83-0a3e7794a862.png">
 
      
 Press the connect button.      
