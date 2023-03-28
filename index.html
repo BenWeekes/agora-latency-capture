@@ -69,14 +69,23 @@
     <div id='statsc2' style="display:inline-block;width:320px;"></div>
   </div>
 
-
+  <br>
+  <br><b>Genius Score</b> is defined as: <b>(average_fps * average_width * average_height) / (latency * video_freezing * dropped_audio)</b>
+  <br>
   <br>
   <b>Method:</b> Two video calls are established simultraneously with a remote web browser over SD-RTN and p2p. 
   <br>The locally generated millisecond clock video is published over both calls and echoed back by the remote user. 
   <br>The clocks are read using OCR and browser metrics are used to calculate connection time, latency, jitter,
   <br>bitrate, framerate volatility and packet loss. These stats cover the full path to the remote computer and back.
   <br>
-  <br><b>The genuis score</b> is defined as: <b>(average_fps * average_width * average_height) / (latency * video_freezing * dropped_audio)</b>
+ <br><b>Stats explained</b> (for more detail visit <a href='https://www.w3.org/TR/webrtc-stats/'>webrtc stats</a>)
+  <br>Connect time: time to join both ends, publish and subscribe, W: Width of inbound video, H: Height of inbound video
+  <br>FPS: frames per second, Nack: packets re-requested from remote, Lost: packets marked lost kbps: inbound bitrate 
+  <br>Drop: incoming video packets dropped, Freezes: incoming video freezes, Freeze Dur: total incoming video freeze duration 
+  <br>Jitter: current jitter, avg:average jitter, max: maximum jitter
+  <br>FPS Vol%: current volatility in render frame rate, avg: fps render vol, max: fps render vol
+  <br>Averages fps: average inbound video fps, W: average width of inbound video, H: average height of inbound video
+  <br>Audio lost: audio packets considered lost, discard: audio packets discarded and not played, delay: audio jitter buffer delay
   <br>
   <br> The connect button will enable once the OCR workers are setup. Any questions: <b>ben@agora.io</b>
   <script src="../assets/jquery-3.4.1.min.js"></script>
