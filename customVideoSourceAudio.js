@@ -524,12 +524,13 @@ async function getStats() {
   }
   genius_score=genius_score/1000;
   genius_score=genius_score.toFixed(0);
-  var stats = "Connect time: " + connectt + " ms, W: " + csm.frameWidth + ", H: " + csm.frameHeight + " <br>FPS: " + csm.fps + ", Nack: " + csm.nack + ", Lost: " + csm.packetsLost + " kbps: " + Math.floor(csm.kbps) + "  <br>Jitter: " + csm.jitter + ", avg:" + csm.jitteravg.toFixed(3) + ", max: " + csm.jittermax.toFixed(3) + "<br>FPS Vol%: " + csm.renderRateStdDeviationPerc.toFixed(0) + ", avg:" + csm.renderRateStdDeviationPercAvg.toFixed(0) + ", max:" + csm.renderRateStdDeviationPercMax.toFixed(0);
-  stats=stats+ " <br>Dropped: " + csm.framesDropped + ", Freezes: " + csm.freezeCount + ", Freeze Dur: " + csm.totalFreezesDuration ;
+  var stats = "Connect time: " + connectt + " ms, W: " + csm.frameWidth + ", H: " + csm.frameHeight + " <br>FPS: " + csm.fps + ", Nack: " + csm.nack + ", Lost: " + csm.packetsLost + " kbps: " + Math.floor(csm.kbps);
+  stats=stats+ " <br>Drop: " + csm.framesDropped + ", Freezes: " + csm.freezeCount + ", Freeze Dur: " + csm.totalFreezesDuration ;
+  stats=stats+ " <br>Jitter: " + csm.jitter + ", avg:" + csm.jitteravg.toFixed(3) + ", max: " + csm.jittermax.toFixed(3);
+  stats=stats+ " <br>FPS Vol%: " + csm.renderRateStdDeviationPerc.toFixed(0) + ", avg:" + csm.renderRateStdDeviationPercAvg.toFixed(0) + ", max:" + csm.renderRateStdDeviationPercMax.toFixed(0);
   stats=stats+ " <br>Averages fps: " + csm.fpsAvg + ", W: " + csm.frameWidthAvg + ", H: " + csm.frameHeightAvg ;
   stats=stats+ " <br>Audio lost: " + csm.packetsLostAudio + ", discard: " + csm.packetsDiscardedAudio + ", delay: " + csm.jitterBufferDelayAudio ;
   stats=stats+ " <br><b>Genius Score</b> : " + genius_score;
-
   document.getElementById("statsc2").innerHTML = stats;
 
   connectt=connect_p;
@@ -541,10 +542,12 @@ async function getStats() {
   }
   genius_score=genius_score/1000;
   genius_score=genius_score.toFixed(0);
-  stats = "Connect time: " + connectt + " ms, W: " + csm.frameWidth + ", H: " + csm.frameHeight + " <br>FPS: " + csm.fps + ", Nack: " + csm.nack + ", Lost: " + csm.packetsLost + " kbps: " + Math.floor(csm.kbps) + "  <br>Jitter: " + csm.jitter + ", avg:" + csm.jitteravg.toFixed(3) + ", max: " + csm.jittermax.toFixed(3) + "<br>FPS Vol%: " + csm.renderRateStdDeviationPerc.toFixed(0) + ", avg:" + csm.renderRateStdDeviationPercAvg.toFixed(0) + ", max:" + csm.renderRateStdDeviationPercMax.toFixed(0);
-  stats=stats+ " <br>Dropped: " + csm.framesDropped + ", Freezes: " + csm.freezeCount + ", Freeze Dur: " + csm.totalFreezesDuration ;
+  stats = "Connect time: " + connectt + " ms, W: " + csm.frameWidth + ", H: " + csm.frameHeight + " <br>FPS: " + csm.fps + ", Nack: " + csm.nack + ", Lost: " + csm.packetsLost + " kbps: " + Math.floor(csm.kbps);
+  stats=stats+ " <br>Drop: " + csm.framesDropped + ", Freezes: " + csm.freezeCount + ", Freeze Dur: " + csm.totalFreezesDuration ;
+  stats=stats+ " <br>Jitter: " + csm.jitter + ", avg:" + csm.jitteravg.toFixed(3) + ", max: " + csm.jittermax.toFixed(3);
+  stats=stats+ " <br>FPS Vol%: " + csm.renderRateStdDeviationPerc.toFixed(0) + ", avg:" + csm.renderRateStdDeviationPercAvg.toFixed(0) + ", max:" + csm.renderRateStdDeviationPercMax.toFixed(0);
   stats=stats+ " <br>Averages fps: " + csm.fpsAvg + ", W: " + csm.frameWidthAvg + ", H: " + csm.frameHeightAvg ;
-  stats=stats+ " <br>Aud lost: " + csm.packetsLostAudio + ", discard: " + csm.packetsDiscardedAudio + ", delay: " + csm.jitterBufferDelayAudio ;
+  stats=stats+ " <br>Audio lost: " + csm.packetsLostAudio + ", discard: " + csm.packetsDiscardedAudio + ", delay: " + csm.jitterBufferDelayAudio ;
   stats=stats+ " <br><b>Genius Score</b> : " + genius_score;
   document.getElementById("statsb2").innerHTML = stats;
 }
@@ -558,8 +561,6 @@ function getMS(parsedDate) {
   var sms = tokens[2] * 1000;
   return ms + hms + mms + sms;
 }
-
-
 
 const doOCR = async () => {
   const c = document.getElementById('canvas');
