@@ -263,8 +263,8 @@ async function join() {
   client.on("user-unpublished", handleUserUnpublished);
   localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
   localTracks.videoTrack = await AgoraRTC.createCustomVideoTrack({ mediaStreamTrack: lstream.getVideoTracks()[0] });
-  start_a = Date.now();
   options.uid = await client.join(options.appid, options.channel, options.token || null, options.uid || null);
+  start_a = Date.now();
   await client.publish([localTracks.videoTrack, localTracks.audioTrack]);
 }
 
@@ -272,8 +272,6 @@ async function join2() {
   client.on("user-published", handleUserPublished);
   client.on("user-unpublished", handleUserUnpublished);
   options.uid = await client.join(options.appid, options.channel, options.token || null, options.uid || null);
-  //await client.publish(Object.values(localTracks));
-  //localTracks.videoTrack.play("local-player");
 }
 
 async function subscribe(user, mediaType) {
@@ -288,7 +286,8 @@ async function subscribe(user, mediaType) {
      ret();
   }
   if (mediaType === 'audio') {
-    user.audioTrack.play();
+    // avoid echo
+   // user.audioTrack.play();
   }
 }
 
