@@ -86,7 +86,21 @@ $.get('https://www.cloudflare.com/cdn-cgi/trace', function (data) {
 });
 
 let p2pids = p2pid + (100 + Math.floor(Math.random() * 100));
-let p2pice = "{ config: { 'iceServers': [ { 'url': 'stun:stun.l.google.com:19302' } ] , trickle: true}, trickle: true }"
+//let p2pice = "{ config: { 'iceServers': [ { 'url': 'stun:stun.l.google.com:19302' } ] , trickle: true}, trickle: true }"
+let p2pice = "{ config: {  iceServers: [{
+        urls: [ "stun:eu-turn4.xirsys.com" ]
+     }, {
+        username: "17BT8AZvZxdSBFARL8ccV7cJWM7PllP7jSci28fhIaILUnWjSO-LMzLda1tHWZkhAAAAAF6D2qNiZW53ZWVrZXM3Mw==",
+        credential: "685ddd3c-73ac-11ea-b446-d68f74b5db2a",
+        urls: [
+            "turn:eu-turn4.xirsys.com:80?transport=udp",
+            "turn:eu-turn4.xirsys.com:3478?transport=udp",
+            "turn:eu-turn4.xirsys.com:80?transport=tcp",
+            "turn:eu-turn4.xirsys.com:3478?transport=tcp",
+            "turns:eu-turn4.xirsys.com:443?transport=tcp",
+            "turns:eu-turn4.xirsys.com:5349?transport=tcp"
+        ]
+     }] , trickle: true}, trickle: true }"
 if (rpid)
   peer = new Peer(p2pid, p2pice);
 else
