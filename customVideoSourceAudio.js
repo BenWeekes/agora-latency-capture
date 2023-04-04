@@ -6,12 +6,16 @@ const channel = searchParams.get("channel");
 
 let rpid = searchParams.get("r");
 let usewebcam = searchParams.get("w");
+let forcempd = searchParams.get("f");
 
 if (rpid && (rpid == 'false' || rpid == '0')) {
   rpid = null;
 }
 if (usewebcam && (usewebcam == 'false' || usewebcam == '0')) {
   usewebcam = null;
+}
+if (forcempd && (forcempd == 'false' || forcempd == '0')) {
+  forcempd = null;
 }
 
 var myvideo = document.createElement('video');
@@ -229,7 +233,9 @@ function endCall() {
 }
 
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-//AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
+if (forcempd) {
+	AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
+}
 var localTracks = {
   videoTrack: null,
   audioTrack: null
@@ -483,8 +489,13 @@ function setStats(report, div, connect, brref, callStatsMap) {
 }
 
 async function getStats() {
+  let dd="";
+  if (forcempd) {
+     dd="F ";
+  }
+
   if (start_p && !isNaN(start_p)) {
-    document.getElementById("durat").textContent = ((Date.now() - start_p) / 1000).toFixed(0);
+    document.getElementById("durat").textContent = dd+ (((Date.now() - start_p) / 1000).toFixed(0));
   }
   if (client && client._p2pChannel && client._p2pChannel.connection && client._p2pChannel.connection.peerConnection) {
     await client._p2pChannel.connection.peerConnection.getStats().then(async stats => {
@@ -516,7 +527,7 @@ async function getStats() {
   let connectt=connect_a;
   let csm=callStatsMap_a;
   let latency_avg_a= Math.floor(agora_total / samplecount);
-  let genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_a+(10*csm.totalFreezesDuration)+csm.packetsDiscardedAudio);
+  let genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_a+(20*csm.totalFreezesDuration)+(10*csm.packetsDiscardedAudio));
   
   if (isNaN(genius_score)){
     genius_score=0;
@@ -535,7 +546,7 @@ async function getStats() {
   connectt=connect_p;
   csm=callStatsMap_p;
   let latency_avg_p= Math.floor(p2p_total / samplecount);
-  genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_p+(10*csm.totalFreezesDuration)+csm.packetsDiscardedAudio);
+  genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_p+(20*csm.totalFreezesDuration)+(10*csm.packetsDiscardedAudio));
   if (isNaN(genius_score)){
     genius_score=0;
   }
