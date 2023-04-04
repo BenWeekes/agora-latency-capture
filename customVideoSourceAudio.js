@@ -708,7 +708,10 @@ function calculateRenderRateVolatility(statsMap) {
     console.warn(1);
     for (let i = 0; i < 4; i++) {
       console.warn(10);
-      const worker = createWorker();
+      const worker = createWorker({
+  workerPath: './dist/worker.min.js',
+  corePath: './dist/tesseract-core.wasm.js',
+});
       console.warn(11);
       await worker.load();
       console.warn(12);
