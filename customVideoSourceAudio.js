@@ -252,6 +252,7 @@ function endCall() {
 
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 if (forcempd) {
+        AgoraRTC.setParameter("AV_SYNC", false);
 	AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
 }
 var localTracks = {
