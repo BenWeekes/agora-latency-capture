@@ -16,6 +16,8 @@ if (usewebcam && (usewebcam == 'false' || usewebcam == '0')) {
 }
 if (forcempd && (forcempd == 'false' || forcempd == '0')) {
   forcempd = null;
+} else {
+	forcempd=true;
 }
 
 var myvideo = document.createElement('video');
@@ -206,6 +208,7 @@ peer.on("call", async (call) => {
   call.answer(mstream);
   currentCall = call;
   call.on("stream",async (remoteStream) => {
+	  //return;
     document.getElementById("received-video").srcObject = remoteStream;
     //await document.getElementById("received-video").play();
     var stream = document.getElementById("received-video").captureStream(30);
@@ -253,7 +256,9 @@ function endCall() {
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 if (forcempd) {
         AgoraRTC.setParameter("AV_SYNC", false);
-	AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
+	AgoraRTC.setParameter("SUBSCRIBE_TWCC", true);
+	//AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
+
 }
 var localTracks = {
   videoTrack: null,
