@@ -293,9 +293,11 @@ async function join() {
   client.on("user-unpublished", handleUserUnpublished);
   localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
   localTracks.videoTrack = await AgoraRTC.createCustomVideoTrack({ mediaStreamTrack: lstream.getVideoTracks()[0] });
-  options.uid = await client.join(options.appid, options.channel, options.token || null, options.uid || null);
   start_a = Date.now();
+  options.uid = await client.join(options.appid, options.channel, options.token || null, options.uid || null);
   await client.publish([localTracks.videoTrack, localTracks.audioTrack]);
+  end_a = Date.now();
+  connect_a = end_a - start_a;
 }
 
 async function join2() {
@@ -357,10 +359,9 @@ async function connect() {
     });
     conn.send("H2");
   });
- // lstream= await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
   setStream();
-  setupP2P();
   join(); // Agora 1
+  setupP2P();
 }
 
 if (rpid) {
@@ -374,13 +375,19 @@ async function setupP2P() {
   const call = await peer.call(channel, gstream);
   call.on("stream",async (stream) => {
     document.getElementById("received-video").srcObject = stream;
+
+    let v=stream.getVideoTracks().length;
+    let a=stream.getAudioTracks().length;
+
+    console.error("stream", a,v);
    //await document.getElementById("received-video").play();
-    if (!end_p) {
+    if (!end_p && v>0 && a>0) {
       end_p = Date.now();
       connect_p = end_p - start_p;
     }
   });
   call.on("data", (stream) => {
+	console.error("data");
    // document.querySelector("#received-video").srcObject = stream;
   });
   call.on("error", (err) => {
@@ -551,7 +558,7 @@ async function getStats() {
   let connectt=connect_a;
   let csm=callStatsMap_a;
   let latency_avg_a= Math.floor(agora_total / samplecount);
-  let genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_a+(20*csm.totalFreezesDuration)+(10*csm.packetsDiscardedAudio));
+  let genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_a+(20*csm.totalFreezesDuration)+(10*(csm.packetsDiscardedAudio+csm.packetsLostAudio)));
   
   if (isNaN(genius_score)){
     genius_score=0;
@@ -570,7 +577,7 @@ async function getStats() {
   connectt=connect_p;
   csm=callStatsMap_p;
   let latency_avg_p= Math.floor(p2p_total / samplecount);
-  genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_p+(20*csm.totalFreezesDuration)+(10*csm.packetsDiscardedAudio));
+  genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_a+(20*csm.totalFreezesDuration)+(10*(csm.packetsDiscardedAudio+csm.packetsLostAudio)));
   if (isNaN(genius_score)){
     genius_score=0;
   }
