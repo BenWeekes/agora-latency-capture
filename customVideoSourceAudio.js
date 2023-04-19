@@ -256,10 +256,10 @@ function endCall() {
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 if (forcempd) {
         AgoraRTC.setParameter("AV_SYNC", false);
-	AgoraRTC.setParameter("SUBSCRIBE_TWCC", true);
-	//AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
-
+	      AgoraRTC.setParameter("SUBSCRIBE_TWCC", true);
+	      //AgoraRTC.setParameter("JOIN_EXTEND", "{ 'force_playoutdelay_0': true }");
 }
+
 var localTracks = {
   videoTrack: null,
   audioTrack: null
@@ -560,6 +560,8 @@ async function getStats() {
   let latency_avg_a= Math.floor(agora_total / samplecount);
   let genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_a+(20*csm.totalFreezesDuration)+(10*(csm.packetsDiscardedAudio+csm.packetsLostAudio)));
   
+
+  
   if (isNaN(genius_score)){
     genius_score=0;
   }
@@ -577,7 +579,7 @@ async function getStats() {
   connectt=connect_p;
   csm=callStatsMap_p;
   let latency_avg_p= Math.floor(p2p_total / samplecount);
-  genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_a+(20*csm.totalFreezesDuration)+(10*(csm.packetsDiscardedAudio+csm.packetsLostAudio)));
+  genius_score=(csm.fpsAvg*csm.frameWidthAvg*csm.frameHeightAvg)/(1+latency_avg_p+(20*csm.totalFreezesDuration)+(10*(csm.packetsDiscardedAudio+csm.packetsLostAudio)));
   if (isNaN(genius_score)){
     genius_score=0;
   }
