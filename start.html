@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <script>
+
+    function init() {
+    let result="P2P-SDRTN-";
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < 14) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+      var primaryLink="/agora-latency-capture/?channel="+result;
+      var secondaryLink=primaryLink+"&r=1";
+      var a = document.getElementById('primaryLink'); 
+      var b = document.getElementById('secondaryLink'); 
+      var c = document.getElementById('channel'); 
+      c.innerText="Testing Channel: "+result;
+      a.href = primaryLink;
+      b.href = secondaryLink;
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+
+
+</head>
+
+<body>
+  <h2>
+   Generate a pair of links to test SD-RTN vs P2P
+
+  </h2>
+
+
+
+
+  <button id='connect' enabled class="btn-primary" style="width:100px; height:22px; margin-bottom: 4px; display:inline-block;background-color: pink;"
+  onclick="location.reload()">Refresh</button>
+  <div style="display: inline-block;" id="channel">
+  </div>
+  <ul>
+    <li><button id='secondary'style=" cursor: pointer; width:170px; height:22px; margin-bottom: 4px; display:inline-block;background-color: rgb(248, 189, 79);"
+      onclick="navigator.clipboard.writeText(secondaryLink);">Copy The Secondary Link</button> and share it with a friend using something like slack or email.</li>
+    <li>Ask your friend to open the link in Google Chrome on desktop or laptop.</li>
+    <li>Once open you can <a  id='primaryLink'  target="_blank" style="margin-left:2px;"> Open The Primary Link In A New Tab </a> </li>
+    <li>Notes:</li>
+    <li>The CONNECT button on the primary link will take about 10 seconds to enable.</li>
+    <li>Once enabled press the CONNECT button and allow the test to run for 3 to 5 mins.</li>
+    <li>Once complete share a screen shot of your browser which will look like the picture below.</li>
+  </ul>
+
+
+  <br>
+  <br>
+
+  <div>
+
+   <button id='primary' style=" display:none; cursor: pointer; width:150px; height:22px; margin-bottom: 4px; background-color: rgb(0, 251, 255);"
+    onclick="navigator.clipboard.writeText(primaryLink);">Copy Primary Link</button>
+   
+
+  </div>
+<br>
+<br>
+<br>
+  <div>
+
+    
+     <a id='secondaryLink' style="display:none; margin-left:20px;" href="">  Go To Secondary Link </a> 
+
+    </div>
+
+
+</body>
+</html>

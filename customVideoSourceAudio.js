@@ -176,7 +176,7 @@ else
 
 var currentCall;
 peer.on("open", function (id) {
-  document.getElementById("uuid").textContent = id;
+  document.getElementById("uuid").textContent = channel;//id;
   if (!rpid) {
     document.getElementById("connect").style.display = 'inline-block';
   }
