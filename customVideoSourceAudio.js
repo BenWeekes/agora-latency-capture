@@ -521,9 +521,6 @@ function setStats(report, div, connect, brref, callStatsMap) {
 
 async function getStats() {
   let dd="";
-  if (forcempd) {
-     dd="F ";
-  }
 
   if (start_p && !isNaN(start_p)) {
     document.getElementById("durat").textContent = dd+ (((Date.now() - start_p) / 1000).toFixed(0));
