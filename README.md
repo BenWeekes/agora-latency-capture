@@ -2,7 +2,7 @@
 
 
 Launch a test:      
-[start](https://sa-utils.agora.io/agora-latency-capture/start.html)
+https://sa-utils.agora.io/agora-latency-capture/start.html       
 
      
 Avoid echo by right clicking the browser tab and selecting Mute Site as shown here:    
