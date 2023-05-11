@@ -1,16 +1,9 @@
 # agora-latency-capture      
 
 
-Change CHANNEL to something random in the two URLs below taking care to use the same new channel name in both URLs.
+Launch a test:      
+https://sa-utils.agora.io/agora-latency-capture/start.html       
 
-
-https://sa-utils.agora.io/agora-latency-capture/?channel=CHANNEL&r=0      
-
-https://sa-utils.agora.io/agora-latency-capture/?channel=CHANNEL&r=1    
-
-Open each URL on two different machines (or two tabs on the same machine).    
-     
-The page with URL ending "r=0" will have a CONNECT button which will become enabled (blue) after a few seconds. 
      
 Avoid echo by right clicking the browser tab and selecting Mute Site as shown here:    
 
