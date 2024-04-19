@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Agora vs p2p</title>
+  <link rel="stylesheet" href="./assets/bootstrap.min.css">
+  <link rel="stylesheet" href="./index.css">
+  <script src="./dist/peerjs.min.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script src='./dist/tesseract.min.js'></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <h4>
+    Agora's SD-RTN vs the Public Internet - Video Calling Quality Comparison
+  </h4>
+  <b><span id="gmt"></span></b>
+  <br>
+ This page compares call quality over Agora's network (SD-RTN) with Peer to Peer (p2p) over the public internet.
+
+  <br>
+  <br>
+  Channel: <span id="uuid"></span>
+
+  &nbsp;
+  IP: <span id="ip"></span>
+  &nbsp;
+  Local: <span id="location"></span>
+  &nbsp;
+  Remote: <span id="remloc"></span>
+  &nbsp;
+  Duration: <span id="durat"></span>
+  &nbsp;
+  <button id='connect' disabled class="btn-primary" style="display:none;background-color: lightgrey;"
+    onclick="connect()">Connect</button>
+
+  <div></div>
+  <div></div>
+  <br>
+  <div style="display:block;">
+    <span id='localv' style="display:none;width:320px; "> Locally Generated Custom Video Source </span>
+    <span id='b' style="display:inline-block;width:320px; "> Video relayed back over Peer to Peer (p2p) </span>
+    <span id='c' style="display:inline-block;width:320px; "> Video relayed back over Agora SD-RTN </span>
+  </div>
+
+  <div style="display:block;">
+    <canvas id="canvas" width="1280" height="720"
+      style="width:320px; height:180px; display:none; background-color:#444;"> </canvas>
+
+    <div style="display:inline-block;">
+      <video autoplay muted playsinline width="320" height="180" style="display:inline-block; background-color:#aaa"
+        id="received-video"></video>
+      <div width="320" height="180" style="display:inline-block; width:320px; height:180px; background-color:#aaa"
+        id="received-video-agora"></div>
+    </div>
+  </div>
+
+  <div style="display:block;">
+    <span id='statsa' style="display:inline-block;width:320px;"></span>
+    <span id='statsb' style="display:inline-block;width:320px;">Real Time Stats</span>
+    <span id='statsc' style="display:inline-block;width:320px;">Real Time Stats</span>
+  </div>
+
+  <div style="display:block;">
+    <div id='statsa2' style="display:inline-block;width:320px;"></div>
+    <div id='statsb2' style="display:inline-block;width:320px;"></div>
+    <div id='statsc2' style="display:inline-block;width:320px;"></div>
+  </div>
+
+  <br>
+  <br><b>Genius Score</b> is defined as: <b>(average_fps * average_width * average_height) / (latency * video_freezing * dropped_audio)</b>
+  <br>
+  <br>
+  <b>Method:</b> Two video calls are established simultraneously with a remote web browser over SD-RTN and p2p. 
+  <br>The locally generated millisecond clock video is published over both calls and echoed back by the remote user. 
+  <br>The clocks are read using OCR and browser metrics are used to calculate connection time, latency, jitter,
+  <br>bitrate, framerate volatility and packet loss. These stats cover the full path to the remote computer and back.
+  <br>
+ <br><b>Stats explained</b> (for more detail visit <a href='https://www.w3.org/TR/webrtc-stats/'>webrtc stats</a>)
+  <br>Connect time: time to join both ends, publish and subscribe, W: Width of inbound video, H: Height of inbound video
+  <br>FPS: frames per second, Nack: packets re-requested from remote, Lost: packets marked lost kbps: inbound bitrate 
+  <br>Drop: incoming video packets dropped, Freezes: incoming video freezes, Freeze Dur: total incoming video freeze duration 
+  <br>Jitter: current jitter, avg:average jitter, max: maximum jitter
+  <br>FPS Vol%: current volatility in render frame rate, avg: fps render vol, max: fps render vol
+  <br>Averages fps: average inbound video fps, W: average width of inbound video, H: average height of inbound video
+  <br>Audio lost: audio packets considered lost, discard: audio packets discarded and not played, delay: audio jitter buffer delay
+  <br>
+  <br> The connect button will enable once the OCR workers are setup. Any questions: <b>ben@agora.io</b>
+  <script src="./assets/jquery-3.4.1.min.js"></script>
+  <script src="./assets/bootstrap.bundle.min.js"></script>
+  <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+  <script src="customVideoSourceAudio.js?a=isss"></script>
+</body>
+</html>
