@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="./index.css">
   <script src="./dist/peerjs.min.js"></script>
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/agora-rtm-sdk@1.5.1/index.js"></script>
   <script src='./dist/tesseract.min.js'></script>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -35,7 +36,7 @@
   Duration: <span id="durat"></span>
   &nbsp;
   <button id='connect' disabled class="btn-primary" style="display:none;background-color: lightgrey;"
-    onclick="connect()">Connect</button>
+    onclick="connectButtonClicked()">Connect</button>
 
   <div></div>
   <div></div>
@@ -44,6 +45,7 @@
     <span id='localv' style="display:none;width:320px; "> Locally Generated Custom Video Source </span>
     <span id='b' style="display:inline-block;width:320px; "> Video relayed back over Peer to Peer (p2p) </span>
     <span id='c' style="display:inline-block;width:320px; "> Video relayed back over Agora SD-RTN </span>
+    <span id='d' style="display:inline-block;width:320px; "> Video relayed back over CF</span>
   </div>
 
   <div style="display:block;">
@@ -55,6 +57,8 @@
         id="received-video"></video>
       <div width="320" height="180" style="display:inline-block; width:320px; height:180px; background-color:#aaa"
         id="received-video-agora"></div>
+        <video autoplay muted playsinline width="320" height="180" style="display:inline-block; background-color:#aaa"
+        id="received-video-cf"></video>   
     </div>
   </div>
 
@@ -62,12 +66,14 @@
     <span id='statsa' style="display:inline-block;width:320px;"></span>
     <span id='statsb' style="display:inline-block;width:320px;">Real Time Stats</span>
     <span id='statsc' style="display:inline-block;width:320px;">Real Time Stats</span>
+    <span id='statsd' style="display:inline-block;width:320px;">Real Time Stats</span>
   </div>
 
   <div style="display:block;">
     <div id='statsa2' style="display:inline-block;width:320px;"></div>
     <div id='statsb2' style="display:inline-block;width:320px;"></div>
     <div id='statsc2' style="display:inline-block;width:320px;"></div>
+    <div id='statsd2' style="display:inline-block;width:320px;"></div>
   </div>
 
   <br>
@@ -92,6 +98,6 @@
   <script src="./assets/jquery-3.4.1.min.js"></script>
   <script src="./assets/bootstrap.bundle.min.js"></script>
   <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
-  <script src="customVideoSourceAudio.js?a=isss"></script>
+  <script src="cf.js?a=isss"></script>
 </body>
 </html>
