@@ -297,6 +297,7 @@ if (forcempd) {
   AgoraRTC.setParameter("AV_SYNC", false);
   AgoraRTC.setParameter("SYNC_GROUP", false);
   AgoraRTC.setParameter("SUBSCRIBE_TWCC", true);
+  AgoraRTC.setParameter("PUBLISH_TWCC", true);
 }
 
 var localTracks = {
